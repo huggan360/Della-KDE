@@ -13,8 +13,8 @@ sudo pacman -S --needed base-devel cmake extra-cmake-modules git kconfig kcoread
 Clone and install Della for the current user:
 
 ```sh
-git clone https://github.com/REPLACE_WITH_OWNER/della-kde.git
-cd della-kde
+git clone https://github.com/huggan360/Della-KDE.git
+cd Della-KDE
 python3 install.py
 ```
 
