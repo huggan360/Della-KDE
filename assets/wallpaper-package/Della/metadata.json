@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Authors": [{"Name": "CachyOS"}],
+        "Description": "Della default: teal and blue waves, light and dark variants",
+        "Id": "Della",
+        "License": "GPL-1.0-only",
+        "Name": "Della Waves"
+    }
+}

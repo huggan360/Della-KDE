@@ -1,0 +1,13 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{"Name": "Hugo"}],
+        "Category": "Date and Time",
+        "Description": "Centered date and time in the system font, with KDE's month calendar",
+        "Icon": "preferences-system-time",
+        "Id": "org.kde.della.clock",
+        "License": "MIT",
+        "Name": "Della Clock"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

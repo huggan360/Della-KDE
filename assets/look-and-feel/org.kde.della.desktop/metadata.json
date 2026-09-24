@@ -1,0 +1,15 @@
+{
+  "KPlugin": {
+    "Id": "org.kde.della.desktop",
+    "Name": "Della",
+    "Description": "Frosted glass windows, clear-glass panels and teal/blue waves",
+    "License": "MIT",
+    "Authors": [
+      {
+        "Name": "Hugo"
+      }
+    ],
+    "Website": ""
+  },
+  "KPackageStructure": "Plasma/LookAndFeel"
+}

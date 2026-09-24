@@ -1,0 +1,4 @@
+kwin-effects-glass by 4v3ngR and contributors (fork of KWin's blur effect; GPL-3.0, see src/LICENSE)
+https://github.com/4v3ngR/kwin-effects-glass
+Vendored commit: f62210bb21a79b28238598cb1def93b2f6d4e7ce (2026-09-19)
+Built locally by build.sh; tools in .tools/ (cmake/ninja via pip, extra-cmake-modules, Vulkan headers).

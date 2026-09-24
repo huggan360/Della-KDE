@@ -1,0 +1,16 @@
+{
+  "KPlugin": {
+    "Id": "DellaLight",
+    "Name": "Della Light",
+    "Description": "Original smoked glass, ice highlights and soft rounded surfaces",
+    "Version": "1.0",
+    "License": "MIT",
+    "Authors": [
+      {
+        "Name": "Hugo"
+      }
+    ]
+  },
+  "X-Plasma-API": "5.0",
+  "KPackageStructure": "KWin/Aurorae"
+}

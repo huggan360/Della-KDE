@@ -1,0 +1,1 @@
+/usr/lib/qt6/qml/org/kde/plasma/components/Control.qml

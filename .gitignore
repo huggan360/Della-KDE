@@ -1,0 +1,17 @@
+backups/
+runtime/
+__pycache__/
+*.pyc
+*.zip
+decoration/build/
+glass-effect/build/
+glass-effect/.tools/
+app-style/build/
+app-style/stage/
+glass-effect/stage/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/build.ninja
+**/.ninja_deps
+**/.ninja_log

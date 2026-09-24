@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Description": "Unified glass titlebars with KDE-standard buttons for Della",
+        "EnabledByDefault": true,
+        "License": "MIT",
+        "Name": "Della"
+    },
+    "org.kde.kdecoration3": {
+        "blur": true,
+        "recommendedBorderSize": "None"
+    }
+}

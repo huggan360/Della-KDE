@@ -1,0 +1,4 @@
+Della Style is based on Glass by 4v3ngR (fork of Darkly, itself derived from KDE Breeze; GPL, see src/COPYING)
+https://github.com/4v3ngR/Glass
+Vendored commit: 2ec67bf2d28094d629bf3fe9bc55c7a8a393cfb1 — modified for Della (style key "Della", config dellastylerc,
+glass tint from dellarc, radius rules: surfaces 14px, controls 8px, grouped menu items/rows with small joins, row insets).

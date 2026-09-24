@@ -1,0 +1,3 @@
+wave.png (light) and wave2.png (dark) from cachyos-wallpapers
+https://github.com/cachyos/cachyos-wallpapers — GPL-1.0-only.
+Re-encoded as JPEG (quality 95); otherwise unmodified.

@@ -1,0 +1,52 @@
+{
+  "radius": 8,
+  "controlInset": 6,
+  "popupBorderWidth": 2,
+  "panelPadding": 5,
+  "popupPadding": 14,
+  "rotationSeconds": 32,
+  "gradientStartDegrees": 45,
+  "titleHeight": 36,
+  "glass": {
+    "mode": "dark",
+    "darkTint": "#171e25",
+    "darkOpacity": 0.5,
+    "lightTint": "#f3f7f9",
+    "lightOpacity": 0.62,
+    "blurStrength": 8,
+    "noiseStrength": 4
+  },
+  "accent": {
+    "teal": "#2bb3a1",
+    "blue": "#3f7fe6"
+  },
+  "liquidGlass": {
+    "BlurStrength": 8,
+    "DecorationBlurStrength": 8,
+    "DockBlurStrength": 6,
+    "NoiseStrength": 0,
+    "UseDeclaredCornerRadius": false,
+    "TopCornerRadius": 8,
+    "BottomCornerRadius": 8,
+    "MenuCornerRadius": 8,
+    "DockCornerRadius": 8,
+    "Saturation": 1.0,
+    "RefractionStrength": 4,
+    "RefractionEdgeSize": 10,
+    "RefractionNormalPow": 2,
+    "RefractionRGBFringing": 1,
+    "RefractionOffsetStrength": 4,
+    "RefractionBevelIntensity": 10,
+    "PhysicallyBasedRefraction": true,
+    "EdgeLighting": false,
+    "EdgeLightingDock": false,
+    "RimSpecular": false,
+    "BlurSaturationCompensation": false,
+    "RefractionExcludeDocks": true,
+    "DynamicCorners": true,
+    "DynamicCornersExcludeWindows": true,
+    "DynamicCornersExcludeMenus": true,
+    "DynamicCornersExcludeTooltips": true,
+    "DynamicCornersExcludeDocks": false
+  }
+}
