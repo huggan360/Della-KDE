@@ -23,7 +23,7 @@ Use `python3 install.py --light` for the light preset. The installer writes only
 To update an existing installation:
 
 ```sh
-cd ~/della-kde
+cd ~/Della-KDE
 git pull
 python3 install.py
 ```
