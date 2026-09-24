@@ -18,7 +18,7 @@ cd Della-KDE
 python3 install.py
 ```
 
-Use `python3 install.py --light` for the light preset. The installer writes only to the current user’s KDE directories and creates a backup before changing settings. Log out and back in once after the first install so KWin and Qt plugins load completely.
+This installs Della’s assets and plugins without changing the active theme, panels, wallpaper, clock, or application settings. Use `python3 install.py --light` for the light assets. To explicitly apply Della’s layout and appearance on your own computer, run `python3 install.py --apply` (or `python3 install.py --light --apply`). Log out and back in once after the first install so KWin and Qt plugins load completely.
 
 To update an existing installation:
 

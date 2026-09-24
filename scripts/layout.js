@@ -5,7 +5,7 @@ var bottom=initial.filter(function(p){return p.location==='bottom';})[0];
 if(!bottom){bottom=new Panel;bottom.location='bottom';bottom.addWidget('org.kde.plasma.kickoff');bottom.addWidget('org.kde.plasma.icontasks');}
 // An island already exists if a top panel holds any of `types`; never create duplicates.
 // New islands hide when a window covers them. `replacement` swaps in a Della widget
-// (e.g. Della Clock instead of Plasma's stock clock).
+// Keep Plasma's stock clock so its layout and calendar follow KDE defaults.
 function island(types,alignment,replacement){
  var host=null,widget=null;
  panels().forEach(function(p){p.widgets().forEach(function(w){if(types.indexOf(w.type)>=0){host=p;widget=w;}});});
@@ -14,7 +14,12 @@ function island(types,alignment,replacement){
  if(replacement){if(widget)widget.remove();p.addWidget(replacement);}
  else if(widget)p.addWidget(widget);else p.addWidget(types[0]);
 }
-island(['org.kde.della.clock','org.kde.plasma.digitalclock'],'center','org.kde.della.clock');
+// Remove the earlier custom clock widget and use Plasma's standard clock/calendar.
+panels().forEach(function(p){
+ var ws=p.widgets();
+ for(var k=0;k<ws.length;k++) if(ws[k].type==='org.kde.della.clock') ws[k].remove();
+});
+island(['org.kde.plasma.digitalclock'],'center');
 island(['org.kde.plasma.systemtray'],'right');
 // Restyle existing panels without deleting widgets, launchers, or notes.
 var list = panels();
@@ -33,13 +38,6 @@ for (var i=0; i<list.length; i++) {
   }
   if(w.type==='org.kde.plasma.icontasks'){
    w.currentConfigGroup=['General'];w.writeConfig('iconSpacing',0);
-  }
-  if(w.type==='org.kde.plasma.digitalclock'){
-   // macOS-style menu-bar clock: small regular system font, "Wed 23 Sep  21:45" on one line.
-   w.currentConfigGroup=['Appearance'];w.writeConfig('showDate',true);
-   w.writeConfig('dateFormat','custom');w.writeConfig('customDateFormat','ddd d MMM');w.writeConfig('dateDisplayFormat',1);
-   w.writeConfig('autoFontAndSize',false);w.writeConfig('fontFamily','');w.writeConfig('fontSize',8);w.writeConfig('fontWeight',400);
-   w.writeConfig('showSeconds',0);w.writeConfig('use24hFormat',2);
   }
  }
 }

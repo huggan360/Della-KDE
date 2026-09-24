@@ -71,13 +71,13 @@ Color=99,104,109
 Color=255,255,255
 
 [Background]
-Color=19,26,46
+Color=27,30,38
 
 [BackgroundFaint]
-Color=19,26,46
+Color=27,30,38
 
 [BackgroundIntense]
-Color=19,26,46
+Color=27,30,38
 
 [Foreground]
 Color=244,246,250
@@ -92,5 +92,5 @@ Color=255,255,255
 Blur=true
 ColorRandomization=false
 Description=Della
-Opacity=0.7
+Opacity=0.74
 Wallpaper=

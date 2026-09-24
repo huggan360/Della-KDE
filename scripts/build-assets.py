@@ -400,7 +400,7 @@ dock.addWidget("org.kde.plasma.marginsseparator");
 
 var clockIsland = island("top", "center", 34);
 clockIsland.hiding = "dodgewindows";
-clockIsland.addWidget("org.kde.della.clock");
+clockIsland.addWidget("org.kde.plasma.digitalclock");
 
 var trayIsland = island("top", "right", 34);
 trayIsland.hiding = "dodgewindows";

@@ -1,20 +1,38 @@
 #!/usr/bin/env python3
-"""Install Della into the current Plasma user's directories; no root required."""
+"""Install Della assets and plugins; settings changes require the explicit --apply flag."""
 from pathlib import Path
 import os,sys,shutil,subprocess,json,datetime,configparser
 ROOT=Path(__file__).resolve().parent
 TOKENS=json.loads((ROOT/'design-tokens.json').read_text());GLASS=TOKENS['glass']
 APPEARANCE='DellaLight' if '--light' in sys.argv else 'Della'
+APPLY_SETTINGS='--apply' in sys.argv
 HOME=Path.home(); CFG=Path(os.environ.get('XDG_CONFIG_HOME',HOME/'.config')); DATA=Path(os.environ.get('XDG_DATA_HOME',HOME/'.local/share'))
-def run(*args,**kw):return subprocess.run([str(x) for x in args],check=True,**kw)
-def config(file,group,key,value):run('kwriteconfig6','--file',CFG/file,'--group',group,'--key',key,str(value))
+def run(*args,**kw):
+ if not APPLY_SETTINGS and str(args[0]) in {'plasma-apply-colorscheme','plasma-apply-desktoptheme'}:return subprocess.CompletedProcess(args,0)
+ if not APPLY_SETTINGS and len(args)>=4 and str(args[0])=='qdbus6' and str(args[1])=='org.kde.KWin':return subprocess.CompletedProcess(args,0)
+ if not APPLY_SETTINGS and str(args[0])=='systemctl' and 'restart' in args:return subprocess.CompletedProcess(args,0)
+ return subprocess.run([str(x) for x in args],check=True,**kw)
+def config(file,group,key,value):
+ if APPLY_SETTINGS:run('kwriteconfig6','--file',CFG/file,'--group',group,'--key',key,str(value))
 def replace_library(source,target):
  # Running KWin/plasmashell/apps have this library mapped: never rewrite it in place (that crashes
  # them). Skip identical copies; otherwise write a new file and atomically rename it over.
  if target.exists() and target.read_bytes()==source.read_bytes():return
  temp=target.with_name('.'+target.name+'.new');shutil.copy2(source,temp);os.replace(temp,target)
-def script(code):run('qdbus6','org.kde.plasmashell','/PlasmaShell','org.kde.PlasmaShell.evaluateScript',code)
-for cmd in ['qdbus6','kwriteconfig6','plasma-apply-colorscheme','plasma-apply-desktoptheme']:
+def script(code):
+ if APPLY_SETTINGS:run('qdbus6','org.kde.plasmashell','/PlasmaShell','org.kde.PlasmaShell.evaluateScript',code)
+def remove_legacy_panel_border():
+ # Older Della builds installed a user-only Plasma shell copy with a 1px panel outline.
+ # Remove only that marked copy and its matching systemd hook; stock Plasma remains intact.
+ overlay=DATA/'plasma/shells/org.kde.plasma.desktop'
+ if (overlay/'.della-overlay').exists():shutil.rmtree(overlay)
+ dropin=CFG/'systemd/user/plasma-plasmashell.service.d/60-della-borders.conf'
+ if dropin.exists() and 'della-popup-borders' in dropin.read_text(errors='ignore'):dropin.unlink()
+ (DATA/'applications/della-borders.desktop').unlink(missing_ok=True)
+ try:run('systemctl','--user','daemon-reload')
+ except (subprocess.CalledProcessError,FileNotFoundError):pass
+remove_legacy_panel_border()
+for cmd in (['qdbus6','kwriteconfig6','plasma-apply-colorscheme','plasma-apply-desktoptheme'] if APPLY_SETTINGS else ['qdbus6']):
  if not shutil.which(cmd):sys.exit('Missing Plasma 6 dependency: '+cmd)
 run('qdbus6','org.kde.plasmashell','/PlasmaShell','org.freedesktop.DBus.Peer.Ping',stdout=subprocess.DEVNULL)
 backup=ROOT/'backups'/datetime.datetime.now().strftime('%Y%m%d-%H%M%S-%f');backup.mkdir(parents=True)
@@ -44,7 +62,8 @@ defaults={'DarkTint':GLASS['darkTint'],'DarkOpacity':GLASS['darkOpacity'],'Light
 for k,v in defaults.items():rc['Glass'].setdefault(k,str(v))
 rc['Glass']['Radius']=str(TOKENS['radius'])
 rc['Glass']['Mode']='light' if APPEARANCE=='DellaLight' else 'dark'
-with (CFG/'dellarc').open('w') as f:rc.write(f,space_around_delimiters=False)
+if APPLY_SETTINGS:
+ with (CFG/'dellarc').open('w') as f:rc.write(f,space_around_delimiters=False)
 # Regenerate so Kvantum, color schemes and Konsole carry the chosen tint.
 run(sys.executable,ROOT/'scripts/build-assets.py')
 for src,dst in [('plasma/Della',DATA/'plasma/desktoptheme/Della'),('plasma/DellaLight',DATA/'plasma/desktoptheme/DellaLight'),('aurorae/Della',DATA/'aurorae/themes/Della'),('aurorae/DellaLight',DATA/'aurorae/themes/DellaLight'),('Kvantum/Della',CFG/'Kvantum/Della'),('Kvantum/DellaLight',CFG/'Kvantum/DellaLight')]:
@@ -62,13 +81,14 @@ for name in ['Della','DellaLight']:
 (DATA/'konsole').mkdir(parents=True,exist_ok=True)
 shutil.copy2(ROOT/'assets/konsole/Della.colorscheme',DATA/'konsole/Della.colorscheme')
 (DATA/'konsole/DellaLight.colorscheme').unlink(missing_ok=True)
-profile=configparser.ConfigParser(strict=False,interpolation=None);profile.optionxform=str;profile.read(konsole_profile)
-for section,values in {'General':{'Name':konsole_profile.stem,'Parent':'FALLBACK/'},'Appearance':{'ColorScheme':'Della'}}.items():
- if not profile.has_section(section):profile.add_section(section)
- for k,v in values.items():
-  if k=='ColorScheme' or k not in profile[section]:profile[section][k]=v
-with konsole_profile.open('w') as f:profile.write(f,space_around_delimiters=False)
-config('konsolerc','Desktop Entry','DefaultProfile',konsole_profile.name)
+if APPLY_SETTINGS:
+ profile=configparser.ConfigParser(strict=False,interpolation=None);profile.optionxform=str;profile.read(konsole_profile)
+ for section,values in {'General':{'Name':konsole_profile.stem,'Parent':'FALLBACK/'},'Appearance':{'ColorScheme':'Della'}}.items():
+  if not profile.has_section(section):profile.add_section(section)
+  for k,v in values.items():
+   if k=='ColorScheme' or k not in profile[section]:profile[section][k]=v
+ with konsole_profile.open('w') as f:profile.write(f,space_around_delimiters=False)
+ config('konsolerc','Desktop Entry','DefaultProfile',konsole_profile.name)
 # Wallpaper package with light (images/) and dark (images_dark/) variants; Plasma follows the color scheme.
 wallpaper=DATA/'wallpapers/Della'
 shutil.rmtree(wallpaper,ignore_errors=True);shutil.copytree(ROOT/'assets/wallpaper-package/Della',wallpaper)
@@ -155,10 +175,20 @@ def desktop_quote(v):return '"'+v.replace('\\','\\\\').replace('"','\\"').replac
 (DATA/'applications/della-glass.desktop').write_text('[Desktop Entry]\nType=Application\nName=Della Glass\nComment=Window glass tint, opacity and blur\nIcon=preferences-desktop-theme\nExec='+desktop_quote(sys.executable)+' '+desktop_quote(str(ROOT/'scripts/glass-settings.py'))+'\nTerminal=false\nCategories=Settings;DesktopSettings;\n')
 run('plasma-apply-desktoptheme','default')
 run('plasma-apply-desktoptheme',APPEARANCE)
+# Remove the legacy shell overlay that drew a hairline around floating docks and islands.
+# Della now leaves panel geometry and borders to Plasma; the glass effect supplies translucency.
+popup_dropin=CFG/'systemd/user/plasma-plasmashell.service.d/60-della-borders.conf'
+popup_dropin.unlink(missing_ok=True)
+popup_runtime=DATA/'della-popup-borders'
+popup_runtime_marker=DATA/'plasma/shells/org.kde.plasma.desktop/.della-overlay'
+if popup_runtime.exists():shutil.rmtree(popup_runtime)
+if popup_runtime_marker.exists():shutil.rmtree(popup_runtime_marker.parent)
+subprocess.run(['systemctl','--user','daemon-reload'],check=False)
 script((ROOT/'scripts/layout.js').read_text())
 script('var force='+('true' if '--wallpaper' in sys.argv else 'false')+';desktops().forEach(function(d){d.currentConfigGroup=["Wallpaper","org.kde.image","General"];var cur=String(d.readConfig("Image")||"");'
  +'if(force||cur===""||cur.indexOf("Della")>=0||cur.indexOf("Glasswave")>=0||cur.indexOf("/Next")>=0){d.wallpaperPlugin="org.kde.image";d.currentConfigGroup=["Wallpaper","org.kde.image","General"];d.writeConfig("Image",'+json.dumps(wallpaper.as_uri())+');}});')
 run('qdbus6','org.kde.KWin','/KWin','org.kde.KWin.reconfigure')
+run('systemctl','--user','restart','plasma-plasmashell.service')
 # A false loadEffect result also means the effect was already loaded.
 if liquid:
  run('qdbus6','org.kde.KWin','/Effects','org.kde.kwin.Effects.unloadEffect','blur',stdout=subprocess.DEVNULL)
@@ -166,5 +196,6 @@ if liquid:
  run('qdbus6','org.kde.KWin','/Effects','org.kde.kwin.Effects.reconfigureEffect','glass',stdout=subprocess.DEVNULL)
 else:
  run('qdbus6','org.kde.KWin','/Effects','org.kde.kwin.Effects.loadEffect','blur',stdout=subprocess.DEVNULL)
-print('Della installed. Backup:',backup)
-print('Reopen applications to load the new style. Log out/in once so KWin and all launchers pick up the local plugin path.')
+print('Della installed without changing KDE settings.' if not APPLY_SETTINGS else 'Della installed and settings applied. Backup: '+str(backup))
+print('Use --apply only if you want Della to change the active theme, panels, wallpaper, and window settings.')
+print('Log out/in once so KWin and Qt plugins load completely.')
